@@ -1,5 +1,5 @@
 # Подготовка к лабораторным работам
-![](../images/preparation_for_labs/0.png)
+![](../images/preparation_for_labs/0.0.png)
 ![](../images/preparation_for_labs/0.1.png)
 ![](../images/preparation_for_labs/0.2.png)
 ![](../images/preparation_for_labs/0.3.png)
