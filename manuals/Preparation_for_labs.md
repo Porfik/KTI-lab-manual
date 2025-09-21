@@ -7,3 +7,4 @@
 ![](../images/preparation_for_labs/0.5.png)
 ![](../images/preparation_for_labs/0.6.png)
 ![](../images/preparation_for_labs/0.7.png)
+![](../images/preparation_for_labs/0.8.png)
