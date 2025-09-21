@@ -63,6 +63,7 @@ Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias "VMware*" | Format-Table -P
 
 ## Установка виртуальной машины
 ### Создание новой ВМ
+
 ![](../images/lab_1/1.5.png)
 
 ![](../images/lab_1/1.6.png)
@@ -98,6 +99,7 @@ Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias "VMware*" | Format-Table -P
 ![](../images/lab_1/1.20.png)
 
 ### Установка Rocky Linux в графическом режиме
+
 ![](../images/lab_1/1.21.png)
 
 ![](../images/lab_1/1.22.png)
