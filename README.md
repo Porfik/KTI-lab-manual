@@ -1,5 +1,5 @@
 # Материалы к лабораторным по КТИ
-![GitHub repo size](https://img.shields.io/github/repo-size/Porfik/DTI-lab-manual) | ![GitHub Repo stars](https://img.shields.io/github/stars/Porfik/DTI-lab-manual)
+![GitHub repo size](https://img.shields.io/github/repo-size/Porfik/DTI-lab-manual) ![GitHub Repo stars](https://img.shields.io/github/stars/Porfik/DTI-lab-manual)
 
 На данной странице расположено все, что понадобится для выполнения лабораторных по КТИ (конструкторско-технологическая информатика). Всего нужно выполнить 4 лабораторных работы, для каждой есть отдельная методичка.
 
