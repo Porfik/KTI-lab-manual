@@ -15,35 +15,35 @@
 
 ![Обязательно прочитайте всё лицензионное соглашение!!!](../images/preparation_for_labs/0.1.png)
 
-![Установка](../images/preparation_for_labs/0.2.png)
+![Установка VS code](../images/preparation_for_labs/0.2.png)
 
 После окончания установки откройте программу и перейдите во вкладку `Extensions` (расширения).
 
-![](../images/preparation_for_labs/0.3.png)
+![Открытая вкладка Extensions](../images/preparation_for_labs/0.3.png)
 
 Для выполнения лабораторных работ нам нужно скачать дополнения для работы с **Python** и **SSH**. Для этого вводим соответствующие названия в поисковую строку и нажимаем на кнопку `Install`.
 
 >[!WARNING]
 >Если после начала скачивания расширения загружаются бесконечно долго (больше 1,5 минут) попробуйте включить VPN и начать установку заново.
 
-![](../images/preparation_for_labs/0.4.png)
+![Расширение для работы с Python](../images/preparation_for_labs/0.4.png)
 
-![](../images/preparation_for_labs/0.5.png)
+![Расширение для работы с SSH](../images/preparation_for_labs/0.5.png)
 
 После установки у вас должна наблюдаться такая картина:
 
-![](../images/preparation_for_labs/0.6.png)
+![Список установленных расширений](../images/preparation_for_labs/0.6.png)
 
 ---
 
 ## Установка VMware Workstation Pro
 Здесь как и с VS code процедура установки не требует пояснений.
 
-![](../images/preparation_for_labs/0.7.png)
+![Установка VMware Workstation Pro](../images/preparation_for_labs/0.7.png)
 
 При первом открытии установленного гипервизора появится такое окно:
 
-![](../images/preparation_for_labs/0.8.png)
+![Вот тебе и welcome, деньги им ещё платить!](../images/preparation_for_labs/0.8.png)
 
 Так как 30 пробных дней нам не хватит, мы позаимствуем лицензионный ключ [отсюда](https://github.com/hegdepavankumar/VMware-Workstation-Pro-17-Licence-Keys) и вставим в соответствующее поле.
 
