@@ -5,6 +5,7 @@
 Скачать их можно по этим ссылкам:
 - [Установщик гипервизора и ISO образ Rocky Linux](https://drive.google.com/drive/folders/1F3HMSls1LDoprFnNyDuAwhaRnjSfKjem)
 - [Установщик VS code](https://code.visualstudio.com/)
+
 После этого у вас на компьютере должны быть файлы как на скриншоте ниже:
 
 ![Скачанные файлы](../images/preparation_for_labs/0.0.png)
