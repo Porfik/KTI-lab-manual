@@ -30,3 +30,16 @@
 
 ![](../images/lab_2/2.14.png)
 
+![](../images/lab_2/2.15.png)
+
+![](../images/lab_2/2.16.png)
+
+![](../images/lab_2/2.17.png)
+
+![](../images/lab_2/2.18.png)
+
+![](../images/lab_2/2.19.png)
+
+![](../images/lab_2/2.20.png)
+
+![](../images/lab_2/2.21.png)
