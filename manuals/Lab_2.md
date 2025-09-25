@@ -339,25 +339,190 @@ dnf info nginx
 
 ![](../images/lab_2/2.38.png)
 
+Теперь установим NGINX при помощи команды:
 
+```bash
+sudo dnf install nginx -y
+```
 
 ![](../images/lab_2/2.39.png)
 
+Веб-сервер можно запустить как службу (процесс в фоне). Для этого можно воспользоваться командой `systemctl`, позволяющей управлять процессами в Linux. Несколько полезных вариантов применения этой команды:
+
+| Команда                        | Описание                                  |
+|--------------------------------|-------------------------------------------|
+| `systemctl start nginx`        | запустить сервис                          |
+| `systemctl stop nginx`         | остановить сервис                         |
+| `systemctl restart nginx`      | перезапуск сервиса                        |
+| `systemctl enable nginx`       | добавить сервис в автозагрузку            |
+| `systemctl enable --now nginx` | добавить в автозагрузку и сразу запустить |
+| `systemctl status nginx`       | показать состояние сервиса                |
+
+Мы же воспользуемся командой:
+
+```bash
+systemctl enable --now nginx
+```
+
+И проверим, что веб-сервер успешно стартовал и готов принимать http-запросы:
+
+```bash
+systemctl enable --now nginx
+```
+
 ![](../images/lab_2/2.40.png)
+
+Откроем в браузере страницу по IP-адресу нашей ВМ. NGINX запущен, однако доступа к сайту нет.
 
 ![](../images/lab_2/2.41.png)
 
+Мы уже сталкивались с подобной ситуацией, необходимо добавить в настройки файрволла еще несколько разрешающих правил. В настройках файрволла по умолчанию нет разрешающих правил для протоколов **http** и **https**, которые используются браузером при обращении к веб-серверу. Исправить это можно командами:
+
+```bash
+sudo firewall-cmd --add-service=http
+```
+
+```bash
+sudo firewall-cmd --add-service=https
+```
+
+```bash
+sudo firewall-cmd --runtime-to-permanent
+```
+
+После чего можно проверить конфигурацию файрволла.
+
 ![](../images/lab_2/2.42.png)
 
-![](../images/lab_2/2.43.png)
+Если все настроено правильно, то в браузере по IP-адресу нашей виртуальной машины откроется стартовая страница NGINX.
 
 ![](../images/lab_2/2.44.png)
+
+Сработало.
 
 ---
 
 ## Управление конфигурацией веб-сервера NGINX
-
-![](../images/lab_2/2.45.png)
+>[!NOTE]
+>Файл конфигурации NGINX по умолчанию находятся в каталоге `/etc/nginx` и называется `nginx.conf`:
+>
+>![](../images/lab_2/2.45.png)
+>
+>Содержимое конфигурационного файла `nginx.conf` по умолчанию различается от версии к версии, далее приведено актуальное на момент написания руководства:
+>
+>```nginx
+>user  nginx;
+>worker_processes  auto;
+>
+>error_log  /var/log/nginx/error.log notice;
+>pid        /var/run/nginx.pid;
+>
+>
+>events {
+>    worker_connections  1024;
+>}
+>
+>
+>http {
+>    include       /etc/nginx/mime.types;
+>    default_type  application/octet-stream;
+>
+>    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+>                      '$status $body_bytes_sent "$http_referer" '
+>                      '"$http_user_agent" "$http_x_forwarded_for"';
+>
+>    access_log  /var/log/nginx/access.log  main;
+>
+>    sendfile        on;
+>    #tcp_nopush     on;
+>
+>    keepalive_timeout  65;
+>
+>    #gzip  on;
+>
+>    include /etc/nginx/conf.d/*.conf;
+>}
+>```
+>
+>В [официальном руководстве](https://nginx.org/ru/docs/beginners_guide.html#conf_structure) описана структура конфигурационного файла, иерархически состоящая из модулей и директив. Внешние файлы можно подключить директивой `include`, например, `include /etc/nginx/conf.d/*.conf` позволяет включать в конфигурацию все файлы из папки `/etc/nginx/conf.d/`, оканчивающиеся на `.conf`. Таким образом для каждого сайта можно создать отдельный конфигурационный файл, что считается хорошим тоном. По умолчанию в этой директории находится файл `default.conf` следующего содержания:
+>
+>```nginx
+>server {
+>    listen       80;
+>    server_name  localhost;
+>
+>    #access_log  /var/log/nginx/host.access.log  main;
+>
+>    location / {
+>        root   /usr/share/nginx/html;
+>        index  index.html index.htm;
+>    }
+>
+>    #error_page  404              /404.html;
+>
+>    # redirect server error pages to the static page /50x.html
+>    #
+>    error_page   500 502 503 504  /50x.html;
+>    location = /50x.html {
+>        root   /usr/share/nginx/html;
+>    }
+>
+>    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+>    #
+>    #location ~ \.php$ {
+>    #    proxy_pass   http://127.0.0.1;
+>    #}
+>
+>    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+>    #
+>    #location ~ \.php$ {
+>    #    root           html;
+>    #    fastcgi_pass   127.0.0.1:9000;
+>    #    fastcgi_index  index.php;
+>    #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+>    #    include        fastcgi_params;
+>    #}
+>
+>    # deny access to .htaccess files, if Apache's document root
+>    # concurs with nginx's one
+>    #
+>    #location ~ /\.ht {
+>    #    deny  all;
+>    #}
+>}
+>```
+>
+>Директива `server` задает виртуальный сервер, который прослушивает порт 80 (`listen 80`), что соответствует протоколу **http**, этот сервер будет обрабатывать запросы по доменному имени localhost (`server_name localhost`).
+>
+>Директива `location` указывает, где в файловой системе расположены html или другие файлы, содержимое которых следует обработать по запросу определенных URL. В рассматриваемом файле URL представляет собой корень сайта – на это указывает символ `/`. Таким образом, при запросе странички сайта `http://localhost` веб-сервер будет искать файлы для обработки в директории `/usr/share/nginx/html`, на что указывает директива `root`. Директива `index` указывает, какие файлы следует обработать в случае, если имя файла не задано в URL.
+>
+>Если заглянуть в директорию `/usr/share/nginx/html`, то там можно обнаружить файл index.html, его содержимое является страничкой приветствия nginx:
+>
+>```html
+><!DOCTYPE html>
+><html>
+><head>
+><title>Welcome to nginx!</title>
+><style>
+>html { color-scheme: light dark; }
+>body { width: 35em; margin: 0 auto;
+>font-family: Tahoma, Verdana, Arial, sans-serif; }
+></style>
+></head>
+><body>
+><h1>Welcome to nginx!</h1>
+><p>If you see this page, the nginx web server is successfully installed and
+>working. Further configuration is required.</p>
+>
+><p>For online documentation and support please refer to
+><a href="http://nginx.org/">nginx.org</a>.<br/>
+>Commercial support is available at
+><a href="http://nginx.com/">nginx.com</a>.</p>
+>
+><p><em>Thank you for using nginx.</em></p>
+></body>
+></html>
+>```
 
 ![](../images/lab_2/2.46.png)
 
