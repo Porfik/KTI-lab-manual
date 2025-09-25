@@ -637,42 +637,244 @@ sudo setenforce 0
 ---
 
 ## Установка и запуск WSGI-сервера
+При запуске Flask возникает предупреждение: `WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.`
+
+Займемся установкой и настройкой WSGI-сервера. Он позволяет автоматизировать запуск и удобно масштабировать веб-приложения. В данной работе применяется WSGI-сервер Gunicorn. Установим Gunicorn в виртуальное окружение командой:
+
+```bash
+pip install gunicorn
+```
+
+После установки нужно убедиться, что Gunicorn может правильно обслуживать приложение. Для запуска gunicorn'у необходимо предать название модуля и имя переменной с приложением в формате `$(MODULE_NAME):$(VARIABLE_NAME)`. Имя модуля в нашем случае - название файла `app.py` без расширения, а имя переменной является именем вызываемого объекта в этом модуле, в нашем случае - `app`. В результате команда запуска примет вид:
+
+```bash
+gunicorn app:app
+```
 
 ![](../images/lab_2/2.57.png)
 
+Судя по выводу, приложение прослушивает сокет `127.0.0.1:8000`. В целях отладки откроем порт 8000 и укажем другой сокет так, чтобы можно было получить ответ в браузере на хосте:
+
+```bash
+sudo firewall-cmd --add-port=8000/tcp
+```
+
+```bash
+sudo firewall-cmd --runtime-to-permanent
+```
+
+```bash
+gunicorn -b 0.0.0.0 app:app
+```
+
 ![](../images/lab_2/2.58.png)
+
+Откроем страницу а браузере.
 
 ![](../images/lab_2/2.59.png)
 
+Одной из возможностей Gunicorn является запуск нескольких рабочих процессов - worker. Изменим код нашего приложения `app.py` так, чтобы в ответ оно отдавало строку с Process id:
+
+```python
+from flask import Flask
+import os
+
+
+app = Flask(__name__)
+
+
+@app.route("/")
+def hello_world():
+    pid = os.getpid()
+    return f"Process ID: {pid}"
+
+
+if __name__ == '__main__':
+    app.run()
+```
+
 ![](../images/lab_2/2.60.png)
 
+>[!NOTE]
+>Условие `if __name__ == "__main__"` выполняется в случае, если файл вызван на исполнение напрямую (например командой `python wsgi.py`), а не импортирован из другого файла. Таким образом, можно запускать приложение напрямую для отладки, а целевой схемой останется запуск посредством Gunicorn.
+
+Выполним запуск командой с указанием количества worker-процессов:
+
+```bash
+gunicorn -w 3 -b 0.0.0.0 app:app
+```
+
 ![](../images/lab_2/2.61.png)
+
+В выводе видно номера запущенных процессов. Проверим, что странички открываются c разными номерами:
 
 ![](../images/lab_2/2.62.png)
 
 ![](../images/lab_2/2.63.png)
 
+Один из важных выводов из проделанного - это возможность принимать запросы, используя один сокет, и перенаправлять их на несколько различных бэкендов.
+
+Займемся автоматизацией запуска нашего приложения. В Linux существует множество вариантов настроить автозапуск, в данной работе рассматривается вариант с использованием systemd. Systemd - это набор базовых компонентов Linux, обладающий обширным функционалом, в том числе предлагающий развитую логику управления службами. Мы уже работали с systemd, запуская и перезапуская nginx командой `systemctl`. Службы в systemd описываются в так называемых unit-файлах. Создадим такой файл для запуска Gunicorn.
+
+```bash
+mkdir -p ~/.config/systemd/user/
+```
+
+```bash
+vi ~/.config/systemd/user/flask_app.service
+```
+
+Внутри напишем:
+
+```conf
+[Unit]
+Description=Gunicorn instance to serve flask_app
+Requires=flask_app.socket
+After=network.target
+
+[Service]
+Type=notify
+RuntimeDirectory=gunicorn
+WorkingDirectory=%h/flask_project/flask_app
+Environment="PATH=%h/flask_project/venv/bin"
+ExecStart=%h/flask_project/venv/bin/gunicorn \
+          --access-logfile - \
+          --workers 1 \
+          --bind unix:/tmp/flask_app.sock \
+          app:app
+
+[Install]
+WantedBy=multi-user.target
+```
+
 ![](../images/lab_2/2.64.png)
+
+Создадим unit-файл с описанием файлового сокета, через который будет идти обмен сообщений между NGINX и нашим приложением:
+
+```bash
+vi ~/.config/systemd/user/flask_app.socket
+```
+
+```conf
+[Unit]
+Description=gunicorn socket
+
+[Socket]
+ListenStream=127.0.0.1:8000
+
+[Install]
+WantedBy=sockets.target
+```
 
 ![](../images/lab_2/2.65.png)
 
+И теперь внесем в конфиг NGINX (`flask_app.conf`) следующие изменения:
+
+```bash
+vi /etc/nginx/conf.d/flask_app.conf
+```
+
+```conf
+upstream flask_app {
+    server 127.0.0.1:8000;
+}
+
+server {
+    listen 80;
+    server_name _;
+
+    location / {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        # proxy_pass http://127.0.0.1:5000;
+        proxy_pass http://flask_app;
+    }
+}
+```
+
 ![](../images/lab_2/2.66.png)
+
+В итоге должна получится такая картина:
 
 ![](../images/lab_2/2.67.png)
 
+После подготовки всех файлов перезапустим nginx и включим сокет нашего приложения:
+
+```bash
+sudo nginx -s reload
+```
+
+```bash
+systemctl --user enable --now flask_app.socket
+```
+
+Проверим состояние нашего сокета.
+
+```bash
+systemctl --user status flask_app.socket
+```
+
 ![](../images/lab_2/2.68.png)
+
+Если все выполнено верно, то NGINX и системный сокет автоматически запустятся после загрузки операционной системы. А значит после перезагрузки виртуальной машины наше приложение начнет работать и будет доступно по 80 порту. После старта сокета можно произвести проверку в браузере.
 
 ---
 
 ## Использование СУБД для хранения информации
+>[!NOTE]
+>Для сохранения информации пользователей в приложениях обычно используются базы данных, которые управляются **системами управления базами данных** (СУБД). В качестве примера таких систем можно привести mysql, postgresql, etcd, MongoDB, sqlite. СУБД обычно разворачивают на отдельном высокопроизводительном сервере, однако для небольших проектов или в среде тестирования и разработки допускается развертывание локальных инстансов.
+
+Мы запустим СУБД локально, воспользовавшись решением sqlite. Развернем проект, содержащий страницы регистрации, входа и выхода с сохранением пользовательских данных в базе данных.
+
+В начале находясь в папке `flask_project` введём команду:
+
+```bash
+rm -rf flask_app/
+```
+
+После чего клонируем проект из репозитория:
+
+```bash
+git clone https://github.com/kottik-mypp/flask_app.git
+```
 
 ![](../images/lab_2/2.69.png)
 
+Перейдём в директорию `flask_app`, где в файле `requirements.txt`  описаны необходимые для запуска приложения модули и пакеты. Установить их можно, воспользовавшись этим файлом с помощью команды:
+
+```bash
+pip install -r requirements.txt
+```
+
 ![](../images/lab_2/2.70.png)
+
+Просмотреть список установленных модулей можно командой:
+
+```bash
+pip list
+```
 
 ![](../images/lab_2/2.71.png)
 
+Дальше перезапустим службу и сокет приложения.
+
+```bash
+systemctl --user stop flask_app.socket
+```
+
+```bash
+systemctl --user stop flask_app.service
+```
+
+```bash
+systemctl --user start flask_app.socket
+```
+
 ![](../images/lab_2/2.72.png)
+
+Теперь приложение должно быть доступно в браузере!
 
 ![](../images/lab_2/2.73.png)
 
@@ -682,6 +884,22 @@ sudo setenforce 0
 
 ![](../images/lab_2/2.76.png)
 
+**ГИП-ГИП УРА!!!**
+
+При запуске приложения в директории `instance` был создан файл СУБД. К ней можно подключиться локально и посмотреть содержимое таблиц:
+
+```bash
+sqlite3 instance/project.db
+```
+
+```sql
+select * from users;
+```
+
 ![](../images/lab_2/2.77.png)
 
 ![](../images/lab_2/2.78.png)
+
+В результате на развернутой виртуальной машине из исходного кода собран интерпретатор python, установлены необходимые пакеты для запуска приложения с функцией аутентификации, настроено проксирование запросов пользователя через веб-сервер NGINX, созданы сервис для автозапуска каждого из компонентов.
+
+**You are amazing! ✨**
