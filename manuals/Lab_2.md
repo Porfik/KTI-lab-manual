@@ -774,7 +774,7 @@ WantedBy=sockets.target
 vi /etc/nginx/conf.d/flask_app.conf
 ```
 
-```conf
+```nginx
 upstream flask_app {
     server 127.0.0.1:8000;
 }
