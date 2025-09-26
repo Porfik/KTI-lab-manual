@@ -405,3 +405,30 @@ chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys
 ![](../images/lab_1/1.63.png)
 
 ### Второй способ генерации и копирования SSH ключей
+Однако есть второй вариант генерации ключей и доставки их на сервер – воспользоваться WSL (Windows Subsystem for Linux). Установка WSL займет непродолжительное время, однако окажется крайней полезной впоследствии (не только в рамках данных работ).
+
+![](../images/lab_1/1.64.png)
+
+![](../images/lab_1/1.65.png)
+
+![](../images/lab_1/1.66.png)
+
+![](../images/lab_1/1.67.png)
+
+![](../images/lab_1/1.68.png)
+
+![](../images/lab_1/1.69.png)
+
+![](../images/lab_1/1.70.png)
+
+![](../images/lab_1/1.71.png)
+
+![](../images/lab_1/1.72.png)
+
+![](../images/lab_1/1.73.png)
+
+![](../images/lab_1/1.74.png)
+
+![](../images/lab_1/1.75.png)
+
+![](../images/lab_1/1.76.png)
