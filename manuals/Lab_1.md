@@ -50,7 +50,7 @@
 
 Давайте проверим присутствие соответствующих сетевых интерфейсов на хосте. В случае Windows проверить это можно открыв PowerShell (оболочка командной строки Windows) и введя команду:
 
-```bash
+```powershell
 Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias "VMware*" | Format-Table -Property InterfaceAlias, IPAddress
 ```
 
@@ -201,7 +201,7 @@ Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias "VMware*" | Format-Table -P
 
 После того как интерфейс включен и ему присвоен IP-адрес, можно проверить доступность виртуальной машины с хоста. Для этого откроем PowerShell и введём команду (используйте IP-адрес вашей ВМ!):
 
-```bash
+```powershell
 ping 192.168.243.128
 ```
 
@@ -250,7 +250,7 @@ ip --br a
 
 Подключиться к виртуальной машине можно прямо из терминала Windows введя:
 
-```bash
+```powershell
 ssh batman@192.168.243.128
 ```
 
@@ -325,7 +325,7 @@ sudo dnf install tar
 
 Для этого в PowerShell введём команду:
 
-```bash
+```powershell
 ssh-keygen -t ed25519
 ```
 
@@ -342,15 +342,15 @@ ssh-keygen -t ed25519
 #### Первый метод копирования SSH ключей
 **Первый метод** – подставить вручную путь к открытому ключу, имя пользователя и IP-адрес в команду:
 
-```bash
+```powershell
 ssh batman@192.168.243.128 "mkdir -p ~/.ssh"
 ```
 
-```bash
+```powershell
 scp "C:\Users\User/.ssh/id_ed25519.pub" batman@192.168.243.128:~/.ssh/authorized_keys
 ```
 
-```bash
+```powershell
 ssh batman@192.168.243.128 "chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys"
 ```
 
@@ -359,15 +359,15 @@ ssh batman@192.168.243.128 "chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys
 #### Второй метод копирования SSH ключей
 **Второй метод** – создать переменные и воспользоваться командлетами PowerShell ([пример](https://code.visualstudio.com/docs/remote/troubleshooting)):
 
-```bash
+```powershell
 $USER_AT_HOST="batman@192.168.243.128"
 ```
 
-```bash
+```powershell
 $PUBKEYPATH="C:\Users\User/.ssh/id_ed25519.pub"
 ```
 
-```bash
+```powershell
 $pubKey=(Get-Content "$PUBKEYPATH" | Out-String); ssh "$USER_AT_HOST" "mkdir -p ~/.ssh && chmod 700 ~/.ssh && echo '${pubKey}' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
 ```
 
@@ -407,13 +407,35 @@ chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys
 ### Второй способ генерации и копирования SSH ключей
 Однако есть второй вариант генерации ключей и доставки их на сервер – воспользоваться WSL (Windows Subsystem for Linux). Установка WSL займет непродолжительное время, однако окажется крайней полезной впоследствии (не только в рамках данных работ).
 
+Узнать список дистрибутивов можно командой:
+
+```bash
+wsl -l -o
+```
+
 ![](../images/lab_1/1.64.png)
+
+Установим:
+
+```powershell
+wsl --install -d Ubuntu
+```
 
 ![](../images/lab_1/1.65.png)
 
 ![](../images/lab_1/1.66.png)
 
+```powershell
+wsl --install Ubuntu-24.04
+```
+
+Возможно, потребуется перезагрузка, об этом будет сказано в процессе установки. После перезагрузки можно увидеть окно установки Ubuntu:
+
 ![](../images/lab_1/1.67.png)
+
+Если его закрыть, не заполняя имя пользователя, то при подключении к WSL попадем туда c учетной записью root.
+
+Подключиться к WSL можно при помощи VSCode, потребуется установить плагин WSL:
 
 ![](../images/lab_1/1.68.png)
 
@@ -421,14 +443,42 @@ chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys
 
 ![](../images/lab_1/1.70.png)
 
+Сгенерируем ключи знакомой командой:
+
+```bash
+ssh-keygen -t ed25519
+```
+
 ![](../images/lab_1/1.71.png)
+
+Теперь немного магии. Файловая система Windows доступна в wsl в каталоге /mnt.
 
 ![](../images/lab_1/1.72.png)
 
+Таким образом, папка с ssh-ключами пользователя `C:\Users\username\.ssh` будет доступна по пути `/mnt/c/Users/username/.ssh`. Скопируем сгенерированные ключи из папки пользователя Windows:
+
+```bash
+cp -v .ssh/id_ed25519* /mnt/c/Users/User/.ssh/
+```
+
 ![](../images/lab_1/1.73.png)
+
+Добавить ключ на ВМ из WLS можно командой:
+
+```bash
+ssh-copy-id batman@192.168.243.128
+```
 
 ![](../images/lab_1/1.74.png)
 
+---
+
+Если все сделано правильно, то подключение к виртуальной машине произойдет без ввода пароля в терминале Windows:
+
 ![](../images/lab_1/1.75.png)
 
+Так и в VS Code:
+
 ![](../images/lab_1/1.76.png)
+
+Поздравляю, первая лабораторная сделана!!!
