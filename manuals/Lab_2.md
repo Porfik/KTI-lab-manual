@@ -361,7 +361,7 @@ sudo dnf install nginx -y
 Мы же воспользуемся командой:
 
 ```bash
-systemctl enable --now nginx
+sudo systemctl enable --now nginx
 ```
 
 И проверим, что веб-сервер успешно стартовал и готов принимать http-запросы:
