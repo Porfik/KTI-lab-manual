@@ -367,7 +367,7 @@ sudo systemctl enable --now nginx
 И проверим, что веб-сервер успешно стартовал и готов принимать HTTP-запросы:
 
 ```bash
-systemctl enable --now nginx
+systemctl status nginx
 ```
 
 ![](../images/lab_2/2.40.png)
