@@ -700,7 +700,7 @@ git checkout script
 git checkout css
 ```
 
-И добавим в `head` описание стилей.
+И добавим в `head` описание стилей:
 
 ```html
 <!DOCTYPE html>
@@ -751,15 +751,57 @@ git checkout css
 
 ![](../images/lab_3/3.59.png)
 
+Коммитим.
+
 ![](../images/lab_3/3.60.png)
+
+Если посмотреть нашу страничку в браузере, то можно увидеть что её внешний вид изменился.
 
 ![](../images/lab_3/3.61.png)
 
+Теперь вернёмся в ветку `html_base`:
+
+```bash
+git checkout html_base
+```
+
+И внесём изменения в HTML код:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KTI Labs</title>
+</head>
+<body>
+    <h1>Learning Through KTI Labs</h1>
+    <p>Laboratory work helps turn theory into practical knowledge. Each experiment builds skills and deepens understanding.</p>
+    <p>Prepare, observe, analyze, and reflect. This is how expertise grows.</p>
+    
+    <div class="matrix" id="matrixCode"></div>
+</body>
+</html>
+```
+
+И закоммитим изменения.
+
 ![](../images/lab_3/3.62.png)
+
+При этом в браузере страничка откатиться к первоначальному состоянию.
 
 ![](../images/lab_3/3.63.png)
 
+Попробуем слить ветку `script` в `html_base`, для этого находясь в ветке `html_base` пропишем:
+
+```bash
+git merge script
+```
+
 ![](../images/lab_3/3.64.png)
+
+Нам выдало ошибку, потому что строка `<div class="matrix" id="matrixCode"></div>` которую мы добавили `html_base` находится там же где открывающий тег `<script>` в ветке `script`. Из-за этого возникает исключение, так как GIT не понимает, какую строчку нужно оставить, а какую нет. Поэтому он возлагает эту задачу на нас.
 
 ![](../images/lab_3/3.65.png)
 
