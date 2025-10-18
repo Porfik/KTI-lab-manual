@@ -407,11 +407,18 @@ git config --list
 Создадим директорию нового проекта, а в ней - новый репозиторий командой:
 
 ```bash
-mkdir demo_project
+sudo chmod 775 /usr/share/nginx/html/
+sudo chown nginx:nginx /usr/share/nginx/html/
+sudo usermod -aG nginx $USER
+newgrp nginx
 ```
 
 ```bash
-cd demo_project
+mkdir /usr/share/nginx/html/demo_project
+```
+
+```bash
+cd /usr/share/nginx/html/demo_project
 ```
 
 ```bash
@@ -555,7 +562,7 @@ server {
     server_name _;
 
     location / {
-        root   /home/batman/demo_project/html;
+        root   /usr/share/nginx/html/demo_project/html;
         index  index.html;
     }
 
@@ -610,7 +617,7 @@ mkdir html && vi html/index.html
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KTI Labs</title>
+    <title>Batman</title>
 </head>
 <body>
     <h1>Learning Through KTI Labs</h1>
@@ -636,9 +643,29 @@ mkdir html && vi html/index.html
 git branch css && git branch script
 ```
 
+И перейдём в `script`:
+
+```bash
+git checkout script
+```
+
 ![](../images/lab_3/3.56.png)
 
+И добавим в конец `body` скриптик:
+
 ```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batman</title>
+</head>
+<body>
+    <h1>Learning Through KTI Labs</h1>
+    <p>Laboratory work helps turn theory into practical knowledge. Each experiment builds skills and deepens understanding.</p>
+    <p>Prepare, observe, analyze, and reflect. This is how expertise grows.</p>
+    
     <script>
         const encrypted =
             "Ly8gRm9sbG93IHRoZSB3aGl0ZSByYWJiaXQuLi4KLy8gU3lzdGVtIG" +
@@ -657,11 +684,70 @@ git branch css && git branch script
             }
         });
     </script>
+</body>
+</html>
 ```
 
 ![](../images/lab_3/3.57.png)
 
+Закоммитим.
+
 ![](../images/lab_3/3.58.png)
+
+Теперь перейдём в `css`:
+
+```bash
+git checkout css
+```
+
+И добавим в `head` описание стилей.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batman</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fafafa;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        p {
+            margin-bottom: 16px;
+            color: #555;
+        }
+        .matrix {
+            display: none;
+            font-family: monospace;
+            color: #0f0;
+            background: #000;
+            padding: 16px;
+            margin-top: 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Learning Through KTI Labs</h1>
+    <p>Laboratory work helps turn theory into practical knowledge. Each experiment builds skills and deepens understanding.</p>
+    <p>Prepare, observe, analyze, and reflect. This is how expertise grows.</p>
+</body>
+</html>
+```
 
 ![](../images/lab_3/3.59.png)
 
