@@ -512,7 +512,7 @@ Batman
 Давайте попробуем первый вариант:
 
 ```bash
-git reevrt aeaaf6f
+git revert aeaaf6f
 ```
 
 После этого у нас выскочит окно, в котором будет автоматически сгенерированный комментарий для коммита, его можно изменить, но в данном случае оставим по умолчанию. Выйти отсюда можно так же как как из Vi.
@@ -622,11 +622,42 @@ mkdir html && vi html/index.html
 
 ![](../images/lab_3/3.53.png)
 
+Закоммитим изменения.
+
 ![](../images/lab_3/3.54.png)
+
+Теперь мы может открыть эту страничку в браузере:
 
 ![](../images/lab_3/3.55.png)
 
+Из ветки `html_base` сделаем 2 новых.
+
+```bash
+git branch css && git branch script
+```
+
 ![](../images/lab_3/3.56.png)
+
+```html
+    <script>
+        const encrypted =
+            "Ly8gRm9sbG93IHRoZSB3aGl0ZSByYWJiaXQuLi4KLy8gU3lzdGVtIG" +
+            "luaXRpYWxpemVkLi4uCi8vIEtub3dsZWRnZTogOTcuMyUKLy8gV2VsY2" +
+            "9tZSB0byB0aGUgcmVhbCB3b3JsZC4KLy8gVGhlcmUgaXMgbm8gc3Bvb24u";
+
+        let seq = '';
+        document.addEventListener('keydown', e => {
+            seq = (seq + e.key.toUpperCase()).slice(-6);
+            if (seq === 'MATRIX') {
+                document.getElementById('matrixCode').textContent = atob(encrypted);
+                document.getElementById('matrixCode').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('matrixCode').style.display = 'none';
+                }, 8000);
+            }
+        });
+    </script>
+```
 
 ![](../images/lab_3/3.57.png)
 
