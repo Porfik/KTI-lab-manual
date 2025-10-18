@@ -596,7 +596,29 @@ git checkout -b html_base
 
 ![](../images/lab_3/3.52.png)
 
-Создадим дирректори
+Создадим директорию `html`, а в ней файл `index.html`.
+
+```bash
+mkdir html && vi html/index.html
+```
+
+Наполнение `index.html`:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KTI Labs</title>
+</head>
+<body>
+    <h1>Learning Through KTI Labs</h1>
+    <p>Laboratory work helps turn theory into practical knowledge. Each experiment builds skills and deepens understanding.</p>
+    <p>Prepare, observe, analyze, and reflect. This is how expertise grows.</p>
+</body>
+</html>
+```
 
 ![](../images/lab_3/3.53.png)
 
