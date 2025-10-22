@@ -93,7 +93,47 @@ docker container run -d -p 80:80 --rm --name nginx -v '/home/batman/KTI_lab_4/co
 ## Docker Compose
 ### Работа с контейнерами
 
+![](../images/lab_4/4.30.png)
+
+![](../images/lab_4/4.31.png)
+
+![](../images/lab_4/4.32.png)
+
+![](../images/lab_4/4.33.png)
+
+![](../images/lab_4/4.34.png)
+
+![](../images/lab_4/4.35.png)
+
+![](../images/lab_4/4.36.png)
+
+![](../images/lab_4/4.37.png)
+
+![](../images/lab_4/4.38.png)
+
+![](../images/lab_4/4.39.png)
+
+![](../images/lab_4/4.40.png)
+
+![](../images/lab_4/4.41.png)
+
+![](../images/lab_4/4.42.png)
+
+![](../images/lab_4/4.43.png)
+
+![](../images/lab_4/4.44.png)
+
+![](../images/lab_4/4.45.png)
+
+![](../images/lab_4/4.46.png)
+
+![](../images/lab_4/4.47.png)
+
+![](../images/lab_4/4.48.png)
+
 ### Переменные окружения
+
+
 
 ---
 
