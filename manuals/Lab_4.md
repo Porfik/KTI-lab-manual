@@ -20,6 +20,9 @@
 ## Docker
 ### Установка Docker
 
+>[!WARNING]
+>Данная лабораторная работа выполняется на новой виртуальной машине, созданной по [аналогии с первой](Lab_1/#создание-новой-вм).
+
 ![](../images/lab_4/4.png)
 
 ![](../images/lab_4/4.1.png)
@@ -128,8 +131,6 @@ docker container run -d -p 80:80 --rm --name nginx -v '/home/batman/KTI_lab_4/co
 ![](../images/lab_4/4.46.png)
 
 ![](../images/lab_4/4.47.png)
-
-![](../images/lab_4/4.48.png)
 
 ### Переменные окружения
 
