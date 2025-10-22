@@ -20,9 +20,73 @@
 ## Docker
 ### Установка Docker
 
+![](../images/lab_4/4.png)
+
+![](../images/lab_4/4.1.png)
+
+![](../images/lab_4/4.2.png)
+
+![](../images/lab_4/4.3.png)
+
+![](../images/lab_4/4.4.png)
+
 ### Запуск контейнеров
 
+![](../images/lab_4/4.5.png)
+
+![](../images/lab_4/4.6.png)
+
+![](../images/lab_4/4.7.png)
+
+![](../images/lab_4/4.8.png)
+
+![](../images/lab_4/4.9.png)
+
+![](../images/lab_4/4.10.png)
+
+![](../images/lab_4/4.11.png)
+
+![](../images/lab_4/4.12.png)
+
+![](../images/lab_4/4.13.png)
+
+![](../images/lab_4/4.14.png)
+
+![](../images/lab_4/4.15.png)
+
+![](../images/lab_4/4.16.png)
+
+![](../images/lab_4/4.17.png)
+
+![](../images/lab_4/4.18.png)
+
+![](../images/lab_4/4.19.png)
+
+```bash
+docker container run -d -p 80:80 --rm --name nginx -v '/home/batman/KTI_lab_4/conf:/etc/nginx/conf.d' -v '/home/batman/KTI_lab_4/html:/usr/share/nginx/html' nginx
+```
+
+![](../images/lab_4/4.20.png)
+
+![](../images/lab_4/4.21.png)
+
 ### Сборка образа контейнера
+
+![](../images/lab_4/4.22.png)
+
+![](../images/lab_4/4.23.png)
+
+![](../images/lab_4/4.24.png)
+
+![](../images/lab_4/4.25.png)
+
+![](../images/lab_4/4.26.png)
+
+![](../images/lab_4/4.27.png)
+
+![](../images/lab_4/4.28.png)
+
+![](../images/lab_4/4.29.png)
 
 ---
 
