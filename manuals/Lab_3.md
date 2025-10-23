@@ -272,7 +272,7 @@ sudo openssl dhparam -out /etc/nginx/ssl/dhparam.pem 4096
 Теперь скопируем в каталог `ssl` сертификат и закрытый ключ веб-сервера.
 
 ```bash
-sudo cp ./pki/certs/webserver.crt ./pki/webserver.key /etc/nginx/ssl/
+sudo cp ~/pki/certs/webserver.crt ~/pki/webserver.key /etc/nginx/ssl/
 ```
 
 ![](../images/lab_3/3.17.png)
@@ -622,7 +622,7 @@ git log
 
 Давайте попробуем откатить изменения в нашем `README.md` до того момента когда элемент `---` ещё не был удалён. Есть два варианта, как это сделать.
 
->[!NNOTE]
+>[!NOTE]
 >`git revert` — создаёт новый коммит, который отменяет изменения указанного предыдущего коммита, сохраняя историю изменений.  
 >
 >`git reset`  — перемещает указатель ветки назад к указанному коммиту и может удалять коммиты из истории (в зависимости от режима: `--soft`, `--mixed`, `--hard`).
