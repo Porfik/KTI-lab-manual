@@ -8,7 +8,7 @@
 	2. [Переменные окружения](#переменные-окружения)
 3. [Автоматизация развёртки приложения](#автоматизация-развёртки-приложения)
 	1. [Предварительные настройки окружения](#предварительные-настройки-окружения)
-	2. 
+	2. [Bash-скрипт](#bash-скрипт)
 
 ---
 
@@ -685,11 +685,42 @@ psql -U flask_user -d flask_db
 >
 >Файлы секретов — это механизм безопасного хранения и передачи конфиденциальной информации, такой как пароли, токены API или ключи шифрования. В отличие от переменных окружения, которые могут быть видны в процессах или логах контейнера, секреты монтируются в контейнеры как файлы в защищённой директории. В `docker-compose.yml` секреты объявляются в секции `secrets`. Использование секретов снижает риск утечки чувствительных данных.
 
+Создадим в `KTI_lab_4` 3 файла, в которые вынесем переменные окружения и пароль:
+
+```bash
+vi flask.env
+```
+
+```conf
+FLASK_DEBUG=True
+PYTHONUNBUFFERED=True
+```
+
 ![](../images/lab_4/4.52.png)
+
+```bash
+vi postgres.env
+```
+
+```conf
+POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+POSTGRES_USER=flask_user
+POSTGRES_DB=flask_db
+```
 
 ![](../images/lab_4/4.53.png)
 
+```bash
+vi db_password
+```
+
+```conf
+Password!
+```
+
 ![](../images/lab_4/4.54.png)
+
+После чего внесём изменения в конфигурационный файл Docker Compose.
 
 ```bash
 vi docker-compose.yaml
@@ -744,7 +775,25 @@ volumes:
 
 ![](../images/lab_4/4.55.png)
 
+Чтобы пересоздать контейнеры, воспользуемся командой:
+
+```bash
+docker compose down && docker compose up -d
+```
+
 ![](../images/lab_4/4.56.png)
+
+Проверить, что пароль из файла секретов действительно подходит к базе можно, попытавшись подключиться к ней.
+
+Перед началом следующей части лабораторной работы удалим созданные контейнеры и тома.
+
+```bash
+docker compose down
+```
+
+```bash
+docker volume rm lab4_postgres_data
+```
 
 ![](../images/lab_4/4.57.png)
 
@@ -752,14 +801,85 @@ volumes:
 
 ## Автоматизация развёртки приложения
 ### Предварительные настройки окружения
+>[!NOTE]
+>В этой части лабораторной мы научимся автоматизировать развёртку приложений на примере уже знакомого нам сайта регистрации.
+
+Сперва подготовим инфраструктуру для него. В домашнем каталоге создадим папку `KTI_infra`, а в ней `Dockerfile`:
+
+```bash
+mkdir KTI_infra && vi KTI_infra/Dockerfile
+```
+
+```docker
+FROM python:3.12-alpine
+
+WORKDIR /flask_project
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+RUN pip install --upgrade pip
+COPY ./flask_project/requirements.txt /flask_project/requirements.txt
+RUN pip install -r requirements.txt
+
+COPY ./flask_project /flask_project
+```
+
+```bash
+cd KTI_infra
+```
 
 ![](../images/lab_4/4.58.png)
 
+Так же создадим файлы с переменными окружения.
+
+```bash
+vi flask.env
+```
+
+```conf
+SQL_DATABASE_TYPE=postgres
+SQL_USER=flask_user
+SQL_PASSWORD_FILE=/run/secrets/db_password
+SQL_HOST=postgres
+SQL_PORT=5432
+SQL_DATABASE=flask_db
+```
+
 ![](../images/lab_4/4.59.png)
+
+```bash
+vi postgres.env
+```
+
+```conf
+POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+POSTGRES_USER=flask_user
+POSTGRES_DB=flask_db
+```
 
 ![](../images/lab_4/4.60.png)
 
+Ещё для работы приложения понадобится создать папку `conf` с файлом конфигурации NGINX:
+
+```bash
+mkdir conf && vi conf/default.conf
+```
+
+```nginx
+server {
+    listen 80;
+    server_name _;
+
+    location / {
+        proxy_pass http://flask:5000;
+    }
+}
+```
+
 ![](../images/lab_4/4.61.png)
+
+Теперь создадим "сердце" проекта:
 
 ```bash
 vi docker-compose.yaml
@@ -820,4 +940,236 @@ volumes:
 
 ![](../images/lab_4/4.62.png)
 
+В конце создадим файл `.gitignore` следующего содержания:
+
+```bash
+vi .gitignore
+```
+
+```conf
+/flask_project
+db_password
+```
+
 ![](../images/lab_4/4.63.png)
+
+Для того, чтобы иметь возможность разворачивать наш проект в любом месте мы поместим все необходимые файлы на GitHub. В целях разграничения кода инфраструктуры и кода приложения будут созданы два репозитория. Первым создадим репозиторий инфраструктуры c названием `KTI_infra` (подробно процесс создания и настройки удалённого репозитория был описан в [предыдущей лабораторной](Lab_3.md/#использование-github)) и выгрузим в него файлы описания инфраструктуры.
+
+![](../images/lab_4/4.64.png)
+
+В итоге будем иметь первый репозиторий такого вида:
+
+![](../images/lab_4/4.65.png)
+
+Ещё нужно создать файл со случайно сгенерированным паролем, это можно сделать командой:
+
+```bash
+tr -dc A-Za-z0-9 </dev/urandom | head -c 24 > db_password
+```
+
+После этого скачаем в `KTI_infra` сам код приложения и перейдём в директорию `flask_project`:
+
+```bash
+git clone https://github.com/kottik-mypp/flask_project.git
+```
+
+```bash
+cd flask_project
+```
+
+![](../images/lab_4/4.66.png)
+
+После чего повторим действия по загрузке в удалённый репозиторий с названием `flask_project` теперь уже кода приложения.
+
+![](../images/lab_4/4.67.png)
+
+Как будет выглядеть второй репозиторий на GitHub:
+
+![](../images/lab_4/4.68.png)
+
+Теперь мы можем запустить наше приложение.
+
+```bash
+docker compose up -d
+```
+
+![](../images/lab_4/4.69.png)
+
+Нам остался последний шаг. Настроим первую виртуальную машину так, что она будет передавать запросы сделанные на её IP-адрес на вторую ВМ. В качестве основного балансировщика нагрузки будет выступать NGINX, настроенный в предыдущей работе. С него запросы будут направляться на виртуальную машину с развернутыми контейнерами. 
+
+Для настройки ***вернемся на первую ВМ*** и изменим конфигурационный файл NGINX:
+
+```bash
+cd /etc/nginx/
+```
+
+```bash
+mv ./conf.d/flask_app.conf ./conf.d/flask_app.conf_old
+```
+
+```bash
+vi ./conf.d/balancer.conf
+```
+
+```nginx
+upstream backend { 
+    server 192.168.243.130:80;
+}
+
+server {
+    listen 80;
+    server_name _;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name _;
+    include ssl_params;
+
+    location / {
+        proxy_pass http://backend/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Real-IP $remote_addr; 
+    }
+}
+```
+
+![](../images/lab_4/4.70.png)
+
+>[!NOTE]
+>В директиве `server` указываем IP-адрес второй виртуальной машины.
+
+После чего перезагружаем NGINX.
+
+```bash
+sudo nginx -s reload
+```
+
+И теперь откроем страничку в браузере по IP-адресу первой ВМ:
+
+![](../images/lab_4/4.71.png)
+
+Всё работает, а если посмотреть логи Docker-а, то можно увидеть запросы с первой ВМ.
+
+### Bash-скрипт
+>[!NOTE]
+>Bash-скрипты — это текстовые файлы, содержащие последовательность команд для оболочки Bash, стандартной командной оболочки в большинстве Linux-систем. Скрипты позволяют автоматизировать рутинные задачи, такие как управление файлами, установка программ, обработка данных или настройка системы, объединяя множество команд в один исполняемый файл.
+
+В домашней директории создадим файл с нашим скриптом автоматизации:
+
+```bash
+vi create-infra.sh
+```
+
+И вставим в него:
+
+```bash
+#!/usr/bin/env bash
+
+REPO_USER=Porfik
+GREEN='\033[92m'
+RED='\033[91m'
+NC='\033[0m'
+
+function date_f {
+    date "+%d.%m.%Y %H:%M:%S"
+}
+
+function generate_secret {
+    secret=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 24; echo)
+    echo "$secret" > db_password
+    red_text "Database password: $secret"
+}
+
+function green_text() {
+    printf "${GREEN}%s${NC}\n" "$1$2"
+}
+
+function red_text() {
+    printf "${RED}%s${NC}\n" "$1$2"
+}
+
+function rainbow_text() {
+    TEXT="$1"
+    COLORS=('\033[91m' '\033[92m' '\033[93m' '\033[94m' '\033[95m' '\033[96m')
+    for ((i=0; i<${#TEXT}; i++)); do
+        printf "${COLORS[i % ${#COLORS[@]}]}%s${NC}" "${TEXT:i:1}"
+    done
+    printf "\n"
+}
+
+green_text "$(date_f) " "Cleanup started"
+
+existing_containers=$(docker container ls -aq)
+if [ -n "$existing_containers" ]; then
+    running_containers=$(docker container ls -q)
+    if [ -n "$running_containers" ]; then
+        docker container stop $running_containers
+    fi
+    docker container rm $existing_containers
+fi
+
+docker buildx prune -af
+
+all_images=$(docker image ls -aq)
+if [ -n "$all_images" ]; then
+    docker image rm -f $all_images
+fi
+
+all_volumes=$(docker volume ls -q)
+if [ -n "$all_volumes" ]; then
+    docker volume rm $all_volumes
+fi
+
+rm -rf ~/KTI_infra
+green_text "$(date_f) " "Cleanup finished"
+green_text "$(date_f) " "Cloning infrastructure from repo"
+
+git clone https://github.com/$REPO_USER/KTI_infra.git
+cd KTI_infra
+
+green_text "$(date_f) " "Cloning project files from repo"
+git clone https://github.com/$REPO_USER/flask_project.git
+green_text "$(date_f) " "Starting containers"
+
+generate_secret
+docker compose up -d
+
+rainbow_text "$(date_f) Infrastructure ready"
+
+exit 0
+```
+
+![](../images/lab_4/4.72.png)
+
+В скрипте необходимо исправить значение переменной окружения `REPO_USER`, подставив в нее имя вашей учётной записи на GitHub.
+
+После создания необходимо добавить файлу со скриптом права на исполнение.
+
+```bash
+chmod +x create-infra.sh
+```
+
+![](../images/lab_4/4.73.png)
+
+И теперь можно его запускать:
+
+```bash
+./create-infra.sh
+```
+
+![](../images/lab_4/4.74.png)
+
+![](../images/lab_4/4.75.png)
+
+![](../images/lab_4/4.76.png)
+
+Зарегистрируемся и войдём на сайт:
+
+![](../images/lab_4/4.77.png)
+
+Скрипт работает, и сайт запускается, а это значит, что вы закончили 4 лабораторную работу!!!
+
+Теперь вам осталось пройти через самую увлекательную часть учебного процесса — ЗАЩИТУ ЛАБАРАТОРНЫХ. Удачи!
