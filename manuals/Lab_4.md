@@ -727,3 +727,72 @@ volumes:
 
 ## Автоматизация развёртки приложения
 ### Предварительные настройки окружения
+
+![](../images/lab_4/4.58.png)
+
+![](../images/lab_4/4.59.png)
+
+![](../images/lab_4/4.60.png)
+
+![](../images/lab_4/4.61.png)
+
+```bash
+vi docker-compose.yaml
+```
+
+```docker
+name: lab4
+services:
+  nginx:
+    image: "nginx:1.29.2"
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./conf:/etc/nginx/conf.d
+    depends_on:
+      - flask
+
+  flask:
+    # image: "joker/flask:1.0"
+    build: .
+    container_name: flask
+    env_file:
+      - flask.env
+    ports:
+      - "5000:5000"
+    secrets:
+      - db_password
+    command: flask --app flask_app run --host=0.0.0.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: "postgres:18-alpine"
+    container_name: postgres
+    env_file:
+      - postgres.env
+    ports:
+      - "5432:5432"
+    secrets:
+      - db_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d flask_db -U flask_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+secrets:
+  db_password:
+    file: ./db_password
+
+volumes:
+  postgres_data:
+```
+
+![](../images/lab_4/4.62.png)
+
+![](../images/lab_4/4.63.png)
