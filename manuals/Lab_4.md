@@ -1167,7 +1167,6 @@ docker compose up -d
 green_text "$(date_f) Infrastructure ready"
 rainbow_text "$(date_f) " "Time elapsed: $(($(date +%s) - $STARTTIME)) seconds"
 exit 0
-
 ```
 
 ![](../images/lab_4/4.72.png)
