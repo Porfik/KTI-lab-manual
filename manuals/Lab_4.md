@@ -1095,7 +1095,7 @@ vi create-infra.sh
 ```bash
 #!/usr/bin/env bash
 
-REPO_USER=And329
+REPO_USER=Porfik
 GREEN='\033[92m'
 RED='\033[91m'
 NC='\033[0m'
@@ -1165,7 +1165,7 @@ generate_secret
 docker compose up -d
 
 green_text "$(date_f) Infrastructure ready"
-rainbow_text "$(date_f) " "Time elapsed: $(($(date +%s) - $STARTTIME)) seconds"
+rainbow_text "$(date_f) Time elapsed: ${elapsed} seconds"
 exit 0
 ```
 
