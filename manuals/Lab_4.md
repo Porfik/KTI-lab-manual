@@ -1095,11 +1095,11 @@ vi create-infra.sh
 ```bash
 #!/usr/bin/env bash
 
-REPO_USER=Porfik
+REPO_USER=And329
 GREEN='\033[92m'
 RED='\033[91m'
 NC='\033[0m'
-
+STARTTIME=$(date +%s)
 function date_f {
     date "+%d.%m.%Y %H:%M:%S"
 }
@@ -1164,9 +1164,10 @@ green_text "$(date_f) " "Starting containers"
 generate_secret
 docker compose up -d
 
-rainbow_text "$(date_f) Infrastructure ready"
-
+green_text "$(date_f) Infrastructure ready"
+rainbow_text "$(date_f) " "Time elapsed: $(($(date +%s) - $STARTTIME)) seconds"
 exit 0
+
 ```
 
 ![](../images/lab_4/4.72.png)
