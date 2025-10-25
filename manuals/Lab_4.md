@@ -234,6 +234,9 @@ location / {
 vi html/index.html
 ```
 
+>[!WARNING]
+>Здесь и далее любое упоминание `Takumi Fujiwara`, `IU4-XX` и `joker` надо заменять на свои инициалы и номер группы *на английском*, в таком формате соответственно: `Ivan Petrov`, `IU4-12` и `petroviv` соответственно.
+
 ```html
 <!DOCTYPE html> 
 <html lang="en"> 
