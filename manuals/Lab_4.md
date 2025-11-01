@@ -830,7 +830,7 @@ mkdir KTI_infra && vi KTI_infra/Dockerfile
 ```
 
 ```docker
-FROM python:3.12-alpine
+FROM python:3.13-alpine
 
 WORKDIR /flask_project
 
