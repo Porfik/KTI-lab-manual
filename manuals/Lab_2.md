@@ -40,7 +40,7 @@ python3 -V
 Прежде чем собирать пакет из исходников, установим некоторое вспомогательное ПО с помощью команды:
 
 ```bash
-sudo dnf install gcc make zlib-devel bzip2-devel openssl-devel xz-devel libffi-devel ncurses-devel sqlite-devel libuuid-devel git -y
+sudo dnf install gcc make zlib-devel bzip2-devel openssl-devel xz-devel libffi-devel ncurses-devel sqlite-devel libuuid-devel tree openssl git -y
 ```
 
 ![](../images/lab_2/2.2.png)
