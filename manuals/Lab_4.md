@@ -66,6 +66,20 @@ newgrp docker
 newgrp docker
 ```
 
+```bash
+vi /etc/docker/daemon.json
+```
+
+```json
+{ "registry-mirrors" : [ "https://dockerhub.timeweb.cloud" ] }
+```
+
+```bash
+sudo systemctl reload docker
+```
+
+![](../images/lab_4/4.78.png)
+
 Проверить работоспособность Docker-а и правильно ли всё установлено можно командой:
 
 ```bash
