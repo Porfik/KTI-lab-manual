@@ -1179,7 +1179,7 @@ green_text "$(date_f) " "Starting containers"
 
 generate_secret
 docker compose up -d
-
+elapsed=$(( $(date +%s) - STARTTIME ))
 green_text "$(date_f) Infrastructure ready"
 rainbow_text "$(date_f) Time elapsed: ${elapsed} seconds"
 exit 0
