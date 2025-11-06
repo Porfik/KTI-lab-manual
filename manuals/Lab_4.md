@@ -69,7 +69,7 @@ newgrp docker
 Теперь создадим файл конфигурации Docker, куда добавляется зеркало реестра https://dockerhub.timeweb.cloud — это позволит нам обойти, введённые глобальным Западом, ограничения доступа к официальному Docker Hub.
 
 ```bash
-vi /etc/docker/daemon.json
+sudo vi /etc/docker/daemon.json
 ```
 
 ```json
