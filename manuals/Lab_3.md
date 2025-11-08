@@ -518,7 +518,7 @@ echo "# Description of the demonstration project" > README.md
 
 ![](../images/lab_3/3.42.png)
 
-Для того, чтобы добавить файл в отслеживаемые гитов введём команду:
+Для того, чтобы добавить `README.md` в перечень отслеживаемых гитом файлов введём команду:
 
 ```bash
 git add README.md
